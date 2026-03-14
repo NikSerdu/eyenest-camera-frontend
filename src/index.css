@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+@theme {
+	/* Brand Blue (from frontend) */
+	--color-brand-blue-50: #eff6ff;
+	--color-brand-blue-100: #dbeafe;
+	--color-brand-blue-200: #bfdbfe;
+	--color-brand-blue-300: #93c5fd;
+	--color-brand-blue-400: #60a5fa;
+	--color-brand-blue-500: #3b82f6;
+	--color-brand-blue-600: #2563eb;
+	--color-brand-blue-700: #1d4ed8;
+	--color-brand-blue-800: #1e40af;
+	--color-brand-blue-900: #1e3a8a;
+
+	/* Neutral */
+	--color-neutral-50: #f8f9fa;
+	--color-neutral-100: #f3f3f5;
+	--color-neutral-200: #ececf0;
+	--color-neutral-300: #d1d5db;
+	--color-neutral-400: #9ca3af;
+	--color-neutral-500: #717182;
+	--color-neutral-600: #4b5563;
+	--color-neutral-700: #374151;
+	--color-neutral-800: #1f2937;
+	--color-neutral-900: #111827;
+
+	/* Slate */
+	--color-slate-50: #f8fafc;
+	--color-slate-100: #f1f5f9;
+	--color-slate-200: #e2e8f0;
+	--color-slate-300: #cbd5e1;
+	--color-slate-400: #94a3b8;
+	--color-slate-500: #64748b;
+	--color-slate-600: #475569;
+	--color-slate-700: #334155;
+	--color-slate-800: #1e293b;
+	--color-slate-900: #0f172a;
+
+	/* Success / Error / Warning */
+	--color-success-500: #10b981;
+	--color-success-600: #059669;
+	--color-error-500: #ef4444;
+	--color-error-600: #dc2626;
+	--color-warning-500: #f59e0b;
+}
+
+@layer utilities {
+	.safe-area-inset-top {
+		padding-top: env(safe-area-inset-top, 0px);
+	}
+	.safe-area-inset-bottom {
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+	.safe-area-inset {
+		padding-top: env(safe-area-inset-top, 0px);
+		padding-right: env(safe-area-inset-right, 0px);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+		padding-left: env(safe-area-inset-left, 0px);
+	}
+	.min-touch-target {
+		min-height: 44px;
+		min-width: 44px;
+	}
+}

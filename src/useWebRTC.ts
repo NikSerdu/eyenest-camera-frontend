@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { EVENTS } from './events'
 import { io, type ManagerOptions, type SocketOptions } from 'socket.io-client'
 
@@ -14,7 +14,7 @@ const options: Partial<ManagerOptions & SocketOptions> = {
 	transports: ['websocket'],
 }
 
-export const socketWebRTC = io('https://5.42.111.58:3000', options)
+export const socketWebRTC = io('http://localhost:3000', options)
 
 interface IUseWebRTC {
 	roomID: string
@@ -24,6 +24,7 @@ export const useWebRTC = ({ roomID }: IUseWebRTC) => {
 	const viewerPeerConnections = useRef<Record<string, RTCPeerConnection>>({})
 	const cameraMediaStream = useRef<MediaStream | null>(null)
 	const cameraMediaElement = useRef<HTMLVideoElement | null>(null)
+	const [isStreaming, setIsStreaming] = useState(false)
 	const handleAddViewerPeer = async ({ peerID }: { peerID: string }) => {
 		const pc = new RTCPeerConnection({
 			iceServers: ICE_SERVERS,
@@ -153,10 +154,9 @@ export const useWebRTC = ({ roomID }: IUseWebRTC) => {
 		}
 	}, [roomID])
 
-	useEffect(() => {
-		async function startCapture() {
+	const startStream = useCallback(async () => {
+		try {
 			cameraMediaStream.current = await navigator.mediaDevices.getUserMedia({
-				// audio: true,
 				video: {
 					width: 1280,
 					height: 720,
@@ -165,16 +165,41 @@ export const useWebRTC = ({ roomID }: IUseWebRTC) => {
 			if (cameraMediaElement.current) {
 				cameraMediaElement.current.srcObject = cameraMediaStream.current
 			}
+			socketWebRTC.emit(EVENTS.JOIN, { roomID, isCamera: true })
+			setIsStreaming(true)
+		} catch (e) {
+			console.error('Error getting userMedia:', e)
 		}
+	}, [roomID])
 
-		startCapture()
-			.then(() => socketWebRTC.emit(EVENTS.JOIN, { roomID, isCamera: true }))
-			.catch(e => console.error('Error getting userMedia:', e))
+	const stopStream = useCallback(() => {
+		cameraMediaStream.current?.getTracks().forEach(track => track.stop())
+		cameraMediaStream.current = null
+		if (cameraMediaElement.current) {
+			cameraMediaElement.current.srcObject = null
+		}
+		Object.values(viewerPeerConnections.current).forEach(pc => pc.close())
+		viewerPeerConnections.current = {}
+		socketWebRTC.emit(EVENTS.LEAVE, { roomID })
+		setIsStreaming(false)
+	}, [roomID])
 
+	useEffect(() => {
+		async function startCapture() {
+			cameraMediaStream.current = await navigator.mediaDevices.getUserMedia({
+				video: { width: 1280, height: 720 },
+			})
+			if (cameraMediaElement.current) {
+				cameraMediaElement.current.srcObject = cameraMediaStream.current
+			}
+			socketWebRTC.emit(EVENTS.JOIN, { roomID, isCamera: true })
+			setIsStreaming(true)
+		}
+		startCapture().catch(e => console.error('Error getting userMedia:', e))
 		return () => {
 			cameraMediaStream.current?.getTracks().forEach(track => track.stop())
-
-			socketWebRTC.emit(EVENTS.LEAVE, { roomID: roomID })
+			cameraMediaStream.current = null
+			socketWebRTC.emit(EVENTS.LEAVE, { roomID })
 		}
 	}, [roomID])
 
@@ -183,5 +208,8 @@ export const useWebRTC = ({ roomID }: IUseWebRTC) => {
 	}, [])
 	return {
 		provideMediaRef,
+		isStreaming,
+		startStream,
+		stopStream,
 	}
 }
