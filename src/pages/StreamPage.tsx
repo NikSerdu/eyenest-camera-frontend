@@ -1,11 +1,10 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LiveKitRoom } from '@livekit/components-react'
 import { useGetLiveKitCameraToken } from '../api/hooks'
 import { RoomVideo } from '../components/stream/RoomVideo'
 import { StreamStatusHeader } from '../components/stream/StreamStatusHeader'
 import { StreamControlsBar } from '../components/stream/StreamControlsBar'
-
-const LIVEKIT_URL = 'ws://localhost:7880'
 
 export function StreamPage() {
 	const { cameraID } = useParams<{ cameraID: string }>()
@@ -19,7 +18,10 @@ export function StreamPage() {
 	} = useGetLiveKitCameraToken(cameraID)
 	const token = tokenResponse?.token
 
-	const isStreaming = !!token && !isLoading && !isError
+	const [isPublishing, setIsPublishing] = useState(true)
+
+	const canToggle = !!token && !isLoading && !isError
+	const isStreaming = canToggle && isPublishing
 
 	return (
 		<div className='fixed inset-0 bg-slate-900 flex flex-col'>
@@ -40,7 +42,7 @@ export function StreamPage() {
 				)}
 				{isStreaming && (
 					<LiveKitRoom
-						serverUrl={LIVEKIT_URL}
+						serverUrl={import.meta.env.VITE_LIVEKIT_URL}
 						token={token}
 						connect
 						video
@@ -52,7 +54,15 @@ export function StreamPage() {
 			</div>
 
 			<StreamStatusHeader isStreaming={isStreaming} />
-			<StreamControlsBar isStreaming={isStreaming} isLoading={isLoading} />
+			<StreamControlsBar
+				isStreaming={isStreaming}
+				isLoading={isLoading}
+				canToggle={canToggle}
+				onToggle={() => {
+					if (!canToggle) return
+					setIsPublishing(prev => !prev)
+				}}
+			/>
 		</div>
 	)
 }

@@ -10,10 +10,10 @@ export const StreamStatusHeader: FC<StreamStatusHeaderProps> = ({
 	isStreaming,
 }) => {
 	return (
-		<header className='absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 safe-area-inset-top'>
+		<header className='absolute top-2 left-2 right-2 z-10 flex items-center justify-between px-3  sm:px-4   bg-black/50 rounded-lg backdrop-blur-sm'>
 			<Link
 				to='/'
-				className='flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white transition-colors py-2 pr-2 -ml-2 rounded-lg hover:bg-white/10 min-touch-target'
+				className='flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white transition-colors rounded-lg hover:bg-white/10 min-touch-target'
 				aria-label='Назад'
 			>
 				<ArrowLeft className='w-5 h-5 sm:w-5 sm:h-5 shrink-0' />
@@ -36,4 +36,3 @@ export const StreamStatusHeader: FC<StreamStatusHeaderProps> = ({
 		</header>
 	)
 }
-
