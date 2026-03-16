@@ -1,7 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { QrCode } from 'lucide-react'
 import { QrScanner } from '../components/QrScanner'
+import {
+	useGetCameraIdByAccessToken,
+	useLinkCamera,
+} from '../api/hooks/camera/camera.hooks'
 
 function parseCodeFromQr(data: string): string | null {
 	try {
@@ -20,9 +24,10 @@ export function LinkCameraPage() {
 	const [code, setCode] = useState('')
 	const [mode, setMode] = useState<'code' | 'qr'>('code')
 	const [error, setError] = useState('')
-
+	const { data: cameraIdResponse, refetch } = useGetCameraIdByAccessToken()
+	const { mutate: linkCamera, isSuccess: isLinkCameraSuccess } = useLinkCamera()
 	const handleSubmit = useCallback(
-		(e: React.FormEvent) => {
+		(e: React.FormEvent<HTMLFormElement>) => {
 			e.preventDefault()
 			const trimmed = code.trim()
 			if (!trimmed) {
@@ -30,9 +35,9 @@ export function LinkCameraPage() {
 				return
 			}
 			setError('')
-			navigate(`/${encodeURIComponent(trimmed)}`)
+			linkCamera({ token: trimmed })
 		},
-		[code, navigate],
+		[code, linkCamera],
 	)
 
 	const handleQrSuccess = useCallback(
@@ -40,16 +45,29 @@ export function LinkCameraPage() {
 			const extracted = parseCodeFromQr(data)
 			if (extracted) {
 				setError('')
-				navigate(`/${encodeURIComponent(extracted)}`)
+				console.log('extracted', extracted)
+				linkCamera({ token: extracted })
 			} else {
 				setError('Неверный формат QR-кода')
 			}
 		},
-		[navigate],
+		[linkCamera],
 	)
 
+	useEffect(() => {
+		if (isLinkCameraSuccess) {
+			refetch()
+		}
+	}, [isLinkCameraSuccess, refetch])
+
+	useEffect(() => {
+		if (cameraIdResponse?.cameraId) {
+			navigate(`/${encodeURIComponent(cameraIdResponse.cameraId)}`)
+		}
+	}, [cameraIdResponse, navigate])
+
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-6'>
+		<div className='min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-6'>
 			<div className='w-full max-w-md'>
 				<div className='text-center mb-8'>
 					<h1 className='text-2xl font-semibold text-slate-900'>
