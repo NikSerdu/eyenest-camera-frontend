@@ -14,6 +14,7 @@ import {
 	getCameraIdByAccessToken,
 	getLiveKitCameraToken,
 	linkCamera,
+	resetCameraLink,
 } from '../../requests'
 
 export const useLinkCamera = (
@@ -49,5 +50,17 @@ export const useGetCameraIdByAccessToken = (
 	useQuery({
 		queryKey: ['get camera id by access token'],
 		queryFn: getCameraIdByAccessToken,
+		...options,
+	})
+
+export const useResetCameraLink = (
+	options?: Omit<
+		UseMutationOptions<unknown, unknown, void>,
+		'mutationKey' | 'mutationFn'
+	>,
+) =>
+	useMutation({
+		mutationKey: ['reset camera link'],
+		mutationFn: resetCameraLink,
 		...options,
 	})

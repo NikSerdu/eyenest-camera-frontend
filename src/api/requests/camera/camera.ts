@@ -28,3 +28,8 @@ export const getCameraIdByAccessToken = () =>
 	authInstance
 		.get<GetCameraIdByAccessTokenResponse>('/camera/getCameraIdByAccessToken')
 		.then(response => response.data)
+
+export const resetCameraLink = () =>
+	authInstance
+		.post<unknown>('/camera/resetCameraLink')
+		.then(response => response.data)

@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@livekit/components-react": "^2.9.20",
 		"@livekit/components-styles": "^1.2.0",
+		"@livekit/egress-sdk": "^0.2.1",
 		"@tanstack/react-query": "^5.90.21",
 		"axios": "^1.13.6",
 		"freeice": "^2.2.2",

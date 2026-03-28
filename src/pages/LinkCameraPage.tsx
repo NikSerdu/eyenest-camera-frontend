@@ -124,7 +124,7 @@ export function LinkCameraPage() {
 											setCode(e.target.value)
 											setError('')
 										}}
-										placeholder='CAM-xxxx-xxxxxxxxx'
+										placeholder=''
 										className='w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent'
 									/>
 									{error && (
