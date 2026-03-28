@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { LiveKitRoom } from '@livekit/components-react'
+import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 import { useGetLiveKitCameraToken } from '../api/hooks'
 import { RoomVideo } from '../components/stream/RoomVideo'
 import { StreamStatusHeader } from '../components/stream/StreamStatusHeader'
@@ -48,6 +48,7 @@ export function StreamPage() {
 						video
 						audio
 					>
+						<RoomAudioRenderer />
 						<RoomVideo />
 					</LiveKitRoom>
 				)}
