@@ -1,0 +1,15 @@
+# Фрагмент для ручного переноса в docker-compose.yml.
+# context: путь к каталогу camera-frontend относительно compose-файла (из infra/ обычно ../camera-frontend).
+#
+# VITE_* — на этапе build; задавайте URL, доступные из браузера пользователя.
+
+services:
+  camera-frontend:
+    build:
+      context: ../camera-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_SERVER_URL: http://localhost:3000
+        VITE_LIVEKIT_URL: ws://localhost:7880
+    ports:
+      - '5174:80'
