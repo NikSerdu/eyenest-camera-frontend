@@ -7,7 +7,7 @@ cat > /usr/share/nginx/html/env.js <<'EOF'
 	var proto = https ? 'https:' : 'http:';
 	var wsProto = https ? 'wss:' : 'ws:';
 	window.__EYENEST_ENV__ = {
-		VITE_SERVER_URL: proto + '//' + h,
+		VITE_SERVER_URL: proto + '//' + h + '/api',
 		VITE_LIVEKIT_URL: wsProto + '//' + h + ':7443',
 	};
 })();
