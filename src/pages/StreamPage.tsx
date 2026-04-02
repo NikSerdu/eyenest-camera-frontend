@@ -5,6 +5,7 @@ import { useGetLiveKitCameraToken } from '../api/hooks'
 import { RoomVideo } from '../components/stream/RoomVideo'
 import { StreamStatusHeader } from '../components/stream/StreamStatusHeader'
 import { StreamControlsBar } from '../components/stream/StreamControlsBar'
+import { getViteLiveKitUrl } from '../shared/runtimeEnv'
 
 export function StreamPage() {
 	const { cameraID } = useParams<{ cameraID: string }>()
@@ -42,7 +43,7 @@ export function StreamPage() {
 				)}
 				{isStreaming && (
 					<LiveKitRoom
-						serverUrl={import.meta.env.VITE_LIVEKIT_URL}
+						serverUrl={getViteLiveKitUrl()}
 						token={token}
 						connect
 						video
