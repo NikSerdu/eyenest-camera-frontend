@@ -5,6 +5,7 @@ import { useGetLiveKitCameraToken } from '../api/hooks'
 import { RoomVideo } from '../components/stream/RoomVideo'
 import { StreamStatusHeader } from '../components/stream/StreamStatusHeader'
 import { StreamControlsBar } from '../components/stream/StreamControlsBar'
+import { CameraSwitchButton } from '../components/stream/CameraSwitchButton'
 
 export function StreamPage() {
 	const { cameraID } = useParams<{ cameraID: string }>()
@@ -50,6 +51,7 @@ export function StreamPage() {
 					>
 						<RoomAudioRenderer />
 						<RoomVideo />
+						<CameraSwitchButton />
 					</LiveKitRoom>
 				)}
 			</div>

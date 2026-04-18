@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { QrCode } from 'lucide-react'
 import { QrScanner } from '../components/QrScanner'
@@ -24,8 +24,24 @@ export function LinkCameraPage() {
 	const [code, setCode] = useState('')
 	const [mode, setMode] = useState<'code' | 'qr'>('code')
 	const [error, setError] = useState('')
-	const { data: cameraIdResponse, refetch } = useGetCameraIdByAccessToken()
-	const { mutate: linkCamera, isSuccess: isLinkCameraSuccess } = useLinkCamera()
+
+	// Not enabled on mount — fires only after explicit refetch()
+	const { refetch } = useGetCameraIdByAccessToken({ enabled: false })
+
+	const { mutate: linkCamera } = useLinkCamera({
+		onSuccess: async () => {
+			// Token accepted — fetch cameraId once and navigate
+			const result = await refetch()
+			const cameraId = result.data?.cameraId
+			if (cameraId) {
+				navigate(`/${encodeURIComponent(cameraId)}`)
+			}
+		},
+		onError: () => {
+			setError('Не удалось привязать камеру. Возможно, код устарел.')
+		},
+	})
+
 	const handleSubmit = useCallback(
 		(e: React.FormEvent<HTMLFormElement>) => {
 			e.preventDefault()
@@ -45,7 +61,6 @@ export function LinkCameraPage() {
 			const extracted = parseCodeFromQr(data)
 			if (extracted) {
 				setError('')
-				console.log('extracted', extracted)
 				linkCamera({ token: extracted })
 			} else {
 				setError('Неверный формат QR-кода')
@@ -53,18 +68,6 @@ export function LinkCameraPage() {
 		},
 		[linkCamera],
 	)
-
-	useEffect(() => {
-		if (isLinkCameraSuccess) {
-			refetch()
-		}
-	}, [isLinkCameraSuccess, refetch])
-
-	useEffect(() => {
-		if (cameraIdResponse?.cameraId) {
-			navigate(`/${encodeURIComponent(cameraIdResponse.cameraId)}`)
-		}
-	}, [cameraIdResponse, navigate])
 
 	return (
 		<div className='min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-6'>
